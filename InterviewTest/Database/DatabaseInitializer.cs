@@ -86,6 +86,15 @@ namespace InterviewTest.Database
             command.CommandText =
                 "INSERT OR IGNORE INTO Products (ProductNumber, SellingPrice) VALUES ('Mobil 1 5W-30', 25)";
             command.ExecuteNonQuery();
+
+            command.CommandText = "DELETE FROM ReturnProducts";
+            command.ExecuteNonQuery();
+            command.CommandText = "DELETE FROM Returns";
+            command.ExecuteNonQuery();
+            command.CommandText = "DELETE FROM OrderProducts";
+            command.ExecuteNonQuery();
+            command.CommandText = "DELETE FROM Orders";
+            command.ExecuteNonQuery();
         }
     }
 }

@@ -5,10 +5,12 @@ namespace InterviewTest.Customers
 {
     public class TruckAccessoriesCustomer : CustomerBase
     {
-        public TruckAccessoriesCustomer(OrderRepository orderRepo, ReturnRepository returnRepo)
-            : base(orderRepo, returnRepo)
+        public TruckAccessoriesCustomer(
+            OrderRepository orderRepo,
+            ReturnRepository returnRepo,
+            CustomerRepository customerRepository)
+            : base(orderRepo, returnRepo, customerRepository)
         {
-
         }
 
         public override string GetName()

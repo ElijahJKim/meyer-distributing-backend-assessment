@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using InterviewTest.Customers;
 using InterviewTest.Products;
 
@@ -19,7 +20,7 @@ namespace InterviewTest.Orders
 
         public void AddProduct(IProduct product)
         {
-            Products.Add(new OrderedProduct(product));
+            Products.Add(new OrderedProduct(product, DateTime.UtcNow));
         }
     }
 }

@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Linq;
 using InterviewTest.Customers;
+using InterviewTest.Database;
 using InterviewTest.Orders;
 using InterviewTest.Products;
+using InterviewTest.Reports;
 using InterviewTest.Returns;
-using InterviewTest.Database;
 
 namespace InterviewTest
 {
     public class Program
     {
-        private static readonly OrderRepository orderRepo = new OrderRepository();
         private static readonly ReturnRepository returnRepo = new ReturnRepository();
+        private static readonly OrderRepository orderRepo = new OrderRepository(returnRepo);
+        private static readonly ProductRepository productRepo = new ProductRepository();
+        private static readonly CustomerRepository customerRepo = new CustomerRepository(orderRepo, returnRepo);
 
         static void Main(string[] args)
         {
@@ -22,7 +25,7 @@ namespace InterviewTest
             // 1: Create a database, contained locally within this project, and refactor all repositories (Order, Return, and Product) to utilize it.
             // 2: Implement get total sales, returns, and profit in the CustomerBase class.
             // 3: Record when an item was purchased.
-            // 4: Ensure all output results, when running this console app, are correct. 
+            // 4: Ensure all output results, when running this console app, are correct.
 
             // ------------------------
             // Bonus
@@ -32,6 +35,8 @@ namespace InterviewTest
             // 2: Create unit tests
 
             DatabaseInitializer.Initialize();
+            returnRepo.SetOrderRepository(orderRepo);
+            orderRepo.SetCustomerRepository(customerRepo);
 
             ProcessTruckAccessoriesExample();
 
@@ -42,26 +47,27 @@ namespace InterviewTest
 
         private static void ProcessTruckAccessoriesExample()
         {
-            var customer = GetTruckAccessoriesCustomer();
+            var customer = customerRepo.GetByName("Meyer Truck Equipment");
 
             IOrder order = new Order("TruckAccessoriesOrder123", customer);
-            order.AddProduct(new HitchAdapter());
-            order.AddProduct(new BedLiner());
+            order.AddProduct(productRepo.GetByProductNumber("DrawTite 5504"));
+            order.AddProduct(productRepo.GetByProductNumber("Rugged Liner F55U15"));
             customer.CreateOrder(order);
 
             IReturn rga = new Return("TruckAccessoriesReturn123", order);
             rga.AddProduct(order.Products.First());
 
             ConsoleWriteLineResults(customer);
+            CustomerActivityReport.Print(customer);
         }
 
         private static void ProcessCarDealershipExample()
-        { 
-            var customer = GetCarDealershipCustomer();
+        {
+            var customer = customerRepo.GetByName("Ruxer Ford Lincoln, Inc.");
 
             IOrder order = new Order("CarDealerShipOrder123", customer);
-            order.AddProduct(new ReplacementBumper());
-            order.AddProduct(new SyntheticOil());
+            order.AddProduct(productRepo.GetByProductNumber("Sherman 036-87-1"));
+            order.AddProduct(productRepo.GetByProductNumber("Mobil 1 5W-30"));
             customer.CreateOrder(order);
 
             IReturn rga = new Return("CarDealerShipReturn123", order);
@@ -69,16 +75,7 @@ namespace InterviewTest
             customer.CreateReturn(rga);
 
             ConsoleWriteLineResults(customer);
-        }
-
-        private static ICustomer GetTruckAccessoriesCustomer()
-        {
-            return new TruckAccessoriesCustomer(orderRepo, returnRepo);
-        }
-
-        private static ICustomer GetCarDealershipCustomer()
-        {
-            return new CarDealershipCustomer(orderRepo, returnRepo);
+            CustomerActivityReport.Print(customer);
         }
 
         private static void ConsoleWriteLineResults(ICustomer customer)

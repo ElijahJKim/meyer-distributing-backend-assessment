@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using InterviewTest.Orders;
 
 namespace InterviewTest.Returns
@@ -18,7 +19,7 @@ namespace InterviewTest.Returns
 
         public void AddProduct(OrderedProduct product)
         {
-            ReturnedProducts.Add(new ReturnedProduct(product));
+            ReturnedProducts.Add(new ReturnedProduct(product, DateTime.UtcNow));
         }
     }
 }
