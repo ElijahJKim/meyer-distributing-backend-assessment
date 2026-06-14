@@ -1,0 +1,13 @@
+# Build output
+bin/
+obj/
+
+# SQLite (created at runtime by DatabaseInitializer)
+*.db
+
+# IDE
+.vs/
+.vscode/
+
+# OS
+.DS_Store
