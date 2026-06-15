@@ -6,6 +6,7 @@ using InterviewTest.Orders;
 using InterviewTest.Products;
 using InterviewTest.Reports;
 using InterviewTest.Returns;
+using InterviewTest.Services;
 
 namespace InterviewTest
 {
@@ -15,6 +16,7 @@ namespace InterviewTest
         private static readonly OrderRepository orderRepo = new OrderRepository(returnRepo);
         private static readonly ProductRepository productRepo = new ProductRepository();
         private static readonly CustomerRepository customerRepo = new CustomerRepository(orderRepo, returnRepo);
+        private static readonly ExchangeService exchangeService = new ExchangeService();
 
         static void Main(string[] args)
         {
@@ -41,6 +43,8 @@ namespace InterviewTest
             ProcessTruckAccessoriesExample();
 
             ProcessCarDealershipExample();
+
+            ProcessExchangeExample();
 
             Console.ReadKey();
         }
@@ -75,6 +79,44 @@ namespace InterviewTest
             customer.CreateReturn(rga);
 
             ConsoleWriteLineResults(customer);
+            CustomerActivityReport.Print(customer);
+        }
+
+        private static void ProcessExchangeExample()
+        {
+            var customer = customerRepo.GetByName("Meyer Truck Equipment");
+
+            IOrder originalOrder = new Order("Truck-777", customer);
+            originalOrder.AddProduct(productRepo.GetByProductNumber("Rugged Liner F55U15"));
+            customer.CreateOrder(originalOrder);
+
+            var newProducts = new IProduct[]
+            {
+                productRepo.GetByProductNumber("DrawTite 5504"),
+                productRepo.GetByProductNumber("Mobil 1 5W-30")
+            };
+
+            var netRefund = exchangeService.ProcessExchange(
+                customer,
+                originalOrder,
+                originalOrder.Products.First(),
+                "Truck-777-RGA",
+                "Truck-777-EX",
+                newProducts);
+
+            Console.WriteLine("--- Exchange: Meyer Truck Equipment ---");
+            Console.WriteLine("Returned: Rugged Liner F55U15 ($150)");
+            Console.WriteLine("New order Truck-777-EX: DrawTite 5504 + Mobil 1 5W-30 ($95)");
+            if (netRefund >= 0)
+            {
+                Console.WriteLine($"Net settlement: refund {netRefund.ToString("c")} to customer");
+            }
+            else
+            {
+                Console.WriteLine($"Net settlement: additional charge {(-netRefund).ToString("c")} from customer");
+            }
+
+            Console.WriteLine();
             CustomerActivityReport.Print(customer);
         }
 

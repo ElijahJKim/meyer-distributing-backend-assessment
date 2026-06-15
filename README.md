@@ -18,6 +18,8 @@ Activity Report용. 요구 3번은 구매 시각만 명시
 .gitignore (bin/, obj/, *.db)
 테스트용 DatabasePaths.SetDatabasePath()
 DbProduct (DB에서 읽은 일반 상품 타입)필수·주석 Bo
+6. ProcessExchange (교환)
+기존 주문 줄 반품 + 새 주문 생성, 차액 정산 (예: 침대 라이너 $150 반품 → 히치 $70 + 오일 $25 재주문 → $55 환불)
 
 ## Future improvements
 

@@ -6,6 +6,7 @@ using InterviewTest.Database;
 using InterviewTest.Orders;
 using InterviewTest.Products;
 using InterviewTest.Returns;
+using InterviewTest.Services;
 
 namespace InterviewTest.Tests
 {
@@ -109,6 +110,67 @@ namespace InterviewTest.Tests
             Assert.Equal(180f, customer.GetTotalSales());
             Assert.Equal(155f, customer.GetTotalReturns());
             Assert.Equal(25f, customer.GetTotalProfit());
+        }
+    }
+
+    public class ExchangeServiceTests : IDisposable
+    {
+        private readonly string _databasePath;
+        private readonly ReturnRepository _returnRepository;
+        private readonly OrderRepository _orderRepository;
+        private readonly ProductRepository _productRepository;
+        private readonly CustomerRepository _customerRepository;
+        private readonly ExchangeService _exchangeService;
+
+        public ExchangeServiceTests()
+        {
+            _databasePath = Path.Combine(Path.GetTempPath(), $"interview-test-{Guid.NewGuid():N}.db");
+            DatabasePaths.SetDatabasePath(_databasePath);
+            DatabaseInitializer.Initialize();
+
+            _returnRepository = new ReturnRepository();
+            _orderRepository = new OrderRepository(_returnRepository);
+            _returnRepository.SetOrderRepository(_orderRepository);
+            _productRepository = new ProductRepository();
+            _customerRepository = new CustomerRepository(_orderRepository, _returnRepository);
+            _exchangeService = new ExchangeService();
+        }
+
+        public void Dispose()
+        {
+            DatabasePaths.ResetDatabasePath();
+            if (File.Exists(_databasePath))
+            {
+                File.Delete(_databasePath);
+            }
+        }
+
+        [Fact]
+        public void ProcessExchange_BedLinerForHitchAndOil_RefundsFiftyFive()
+        {
+            var customer = _customerRepository.GetByName("Meyer Truck Equipment");
+            var originalOrder = new Order("Truck-777", customer);
+            originalOrder.AddProduct(_productRepository.GetByProductNumber("Rugged Liner F55U15"));
+            customer.CreateOrder(originalOrder);
+
+            var newProducts = new IProduct[]
+            {
+                _productRepository.GetByProductNumber("DrawTite 5504"),
+                _productRepository.GetByProductNumber("Mobil 1 5W-30")
+            };
+
+            var netRefund = _exchangeService.ProcessExchange(
+                customer,
+                originalOrder,
+                originalOrder.Products.First(),
+                "Truck-777-RGA",
+                "Truck-777-EX",
+                newProducts);
+
+            Assert.Equal(55f, netRefund);
+            Assert.Equal(245f, customer.GetTotalSales());
+            Assert.Equal(150f, customer.GetTotalReturns());
+            Assert.Equal(95f, customer.GetTotalProfit());
         }
     }
 }
