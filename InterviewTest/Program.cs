@@ -46,6 +46,8 @@ namespace InterviewTest
 
             ProcessExchangeExample();
 
+            ProcessLoyaltyDiscountExample();
+
             Console.ReadKey();
         }
 
@@ -117,6 +119,35 @@ namespace InterviewTest
             }
 
             Console.WriteLine();
+            CustomerActivityReport.Print(customer);
+        }
+
+        private static void ProcessLoyaltyDiscountExample()
+        {
+            var customer = customerRepo.GetByName("Meyer Truck Equipment");
+
+            var order1 = new Order("Loyalty-1", customer);
+            order1.AddProduct(productRepo.GetByProductNumber("DrawTite 5504"));
+            order1.AddProduct(productRepo.GetByProductNumber("Rugged Liner F55U15"));
+            order1.AddProduct(productRepo.GetByProductNumber("Sherman 036-87-1"));
+            order1.AddProduct(productRepo.GetByProductNumber("Mobil 1 5W-30"));
+            customer.CreateOrder(order1);
+
+            var order2 = new Order("Loyalty-2", customer);
+            order2.AddProduct(productRepo.GetByProductNumber("Rugged Liner F55U15"));
+            customer.CreateOrder(order2);
+
+            var order3 = new Order("Loyalty-3", customer);
+            order3.AddProduct(productRepo.GetByProductNumber("Mobil 1 5W-30"));
+            customer.CreateOrder(order3);
+
+            Console.WriteLine("--- Loyalty discount: Meyer Truck Equipment ---");
+            Console.WriteLine("Cumulative sales reached $500+ before Loyalty-3");
+            Console.WriteLine(
+                $"Loyalty-3 Mobil 1 5W-30: catalog {25f:c} → charged {order3.Products[0].SellingPrice:c} (10% off)");
+            Console.WriteLine();
+
+            ConsoleWriteLineResults(customer);
             CustomerActivityReport.Print(customer);
         }
 

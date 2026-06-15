@@ -29,8 +29,8 @@ namespace InterviewTest.Services
 
             customer.CreateOrder(newOrder);
 
-            var returnedAmount = lineToReturn.Product.GetSellingPrice();
-            var newOrderTotal = newProducts.Sum(p => p.GetSellingPrice());
+            var returnedAmount = lineToReturn.SellingPrice;
+            var newOrderTotal = newOrder.Products.Sum(p => p.SellingPrice);
             return returnedAmount - newOrderTotal;
         }
     }

@@ -20,7 +20,7 @@ namespace InterviewTest.Orders
 
         public void AddProduct(IProduct product)
         {
-            Products.Add(new OrderedProduct(product, DateTime.UtcNow));
+            Products.Add(new OrderedProduct(product, DateTime.UtcNow, product.GetSellingPrice()));
         }
     }
 }

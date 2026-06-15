@@ -111,6 +111,30 @@ namespace InterviewTest.Tests
             Assert.Equal(155f, customer.GetTotalReturns());
             Assert.Equal(25f, customer.GetTotalProfit());
         }
+
+        [Fact]
+        public void LoyaltyCustomer_GetsTenPercentOffAfterFiveHundredInSales()
+        {
+            var customer = _customerRepository.GetByName("Meyer Truck Equipment");
+
+            var order1 = new Order("Loyalty-1", customer);
+            order1.AddProduct(_productRepository.GetByProductNumber("DrawTite 5504"));
+            order1.AddProduct(_productRepository.GetByProductNumber("Rugged Liner F55U15"));
+            order1.AddProduct(_productRepository.GetByProductNumber("Sherman 036-87-1"));
+            order1.AddProduct(_productRepository.GetByProductNumber("Mobil 1 5W-30"));
+            customer.CreateOrder(order1);
+
+            var order2 = new Order("Loyalty-2", customer);
+            order2.AddProduct(_productRepository.GetByProductNumber("Rugged Liner F55U15"));
+            customer.CreateOrder(order2);
+
+            var order3 = new Order("Loyalty-3", customer);
+            order3.AddProduct(_productRepository.GetByProductNumber("Mobil 1 5W-30"));
+            customer.CreateOrder(order3);
+
+            Assert.Equal(22.5f, order3.Products[0].SellingPrice);
+            Assert.Equal(572.5f, customer.GetTotalSales());
+        }
     }
 
     public class ExchangeServiceTests : IDisposable

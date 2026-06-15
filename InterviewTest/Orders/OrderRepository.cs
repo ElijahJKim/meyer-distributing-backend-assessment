@@ -58,7 +58,7 @@ namespace InterviewTest.Orders
                     "VALUES (@orderId, @productNumber, @sellingPrice, @purchasedAt)";
                 command.Parameters.AddWithValue("@orderId", orderId);
                 command.Parameters.AddWithValue("@productNumber", orderedProduct.Product.GetProductNumber());
-                command.Parameters.AddWithValue("@sellingPrice", orderedProduct.Product.GetSellingPrice());
+                command.Parameters.AddWithValue("@sellingPrice", orderedProduct.SellingPrice);
                 command.Parameters.AddWithValue("@purchasedAt", orderedProduct.PurchasedAt.ToString("o"));
                 command.ExecuteNonQuery();
 
@@ -121,7 +121,7 @@ namespace InterviewTest.Orders
                     var sellingPrice = productReader.GetFloat(1);
                     var purchasedAt = DateTime.Parse(productReader.GetString(2));
                     var product = CreateProduct(productNumber, sellingPrice);
-                    order.Products.Add(new OrderedProduct(product, purchasedAt));
+                    order.Products.Add(new OrderedProduct(product, purchasedAt, sellingPrice));
                 }
 
                 orders.Add(order);

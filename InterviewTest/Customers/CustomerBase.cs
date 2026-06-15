@@ -24,6 +24,14 @@ namespace InterviewTest.Customers
 
     public void CreateOrder(IOrder order)
     {
+      if (GetTotalSales() >= 500f)
+      {
+        foreach (var line in order.Products)
+        {
+          line.SellingPrice *= 0.9f;
+        }
+      }
+
       _orderRepository.Add(order);
     }
 
