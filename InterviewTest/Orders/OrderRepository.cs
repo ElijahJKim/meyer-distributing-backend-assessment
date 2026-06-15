@@ -110,18 +110,21 @@ namespace InterviewTest.Orders
 
                 using var productCommand = connection.CreateCommand();
                 productCommand.CommandText =
-                    "SELECT ProductNumber, SellingPrice, PurchasedAt " +
+                    "SELECT Id, ProductNumber, SellingPrice, PurchasedAt " +
                     "FROM OrderProducts WHERE OrderId = @orderId";
                 productCommand.Parameters.AddWithValue("@orderId", orderId);
 
                 using var productReader = productCommand.ExecuteReader();
                 while (productReader.Read())
                 {
-                    var productNumber = productReader.GetString(0);
-                    var sellingPrice = productReader.GetFloat(1);
-                    var purchasedAt = DateTime.Parse(productReader.GetString(2));
+                    var orderProductId = productReader.GetInt64(0);
+                    var productNumber = productReader.GetString(1);
+                    var sellingPrice = productReader.GetFloat(2);
+                    var purchasedAt = DateTime.Parse(productReader.GetString(3));
                     var product = CreateProduct(productNumber, sellingPrice);
-                    order.Products.Add(new OrderedProduct(product, purchasedAt, sellingPrice));
+                    var orderedProduct = new OrderedProduct(product, purchasedAt, sellingPrice);
+                    orderedProduct.Id = orderProductId;
+                    order.Products.Add(orderedProduct);
                 }
 
                 orders.Add(order);
